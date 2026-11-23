@@ -13,12 +13,20 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [goalFilter, setGoalFilter] = useState<"active" | "completed">("active");
   const [goals, setGoals] = useState<Goal[]>(() => {
-    const saved = localStorage.getItem("goals_v2");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem("goals_v2");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
   const [routines, setRoutines] = useState<Routine[]>(() => {
-    const saved = localStorage.getItem("routines_v2");
-    if (saved) return JSON.parse(saved);
+    try {
+      const saved = localStorage.getItem("routines_v2");
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // Fallback to defaults
+    }
     return [
       {
         id: "1",
@@ -42,11 +50,19 @@ export default function App() {
   const [confirmClearCompleted, setConfirmClearCompleted] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("goals_v2", JSON.stringify(goals));
+    try {
+      localStorage.setItem("goals_v2", JSON.stringify(goals));
+    } catch {
+      // Ignore storage quota errors
+    }
   }, [goals]);
 
   useEffect(() => {
-    localStorage.setItem("routines_v2", JSON.stringify(routines));
+    try {
+      localStorage.setItem("routines_v2", JSON.stringify(routines));
+    } catch {
+      // Ignore storage quota errors
+    }
   }, [routines]);
 
   const saveGoal = (
